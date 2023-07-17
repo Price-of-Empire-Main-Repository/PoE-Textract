@@ -4,14 +4,14 @@ PoE Textract is an Amazon Textract Tabular Formatted Parser Application for UoT 
 
 ## Table of Contents
 
-- [Stack](#Stack)
-- [Pipeline](#Pipeline)
-- [Setup](#Setup)
-	- [Install](#Install)
-    - [Usage](#Usage)
-- [Deployment](#Deployment)
-- [Contributors](#Contributors)
-- [License](#License)
+- [Stack](#stack)
+- [Pipeline](#pipeline)
+- [Setup](#setup)
+	- [Install](#install)
+    - [Usage](#usage)
+- [Deployment](#deployment)
+- [Contributors](#contributors)
+- [License](#license)
 
 ## Stack
 - <strong>GUI</strong> Python Tkinter
