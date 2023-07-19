@@ -22,6 +22,13 @@ PoE Textract is an Amazon Textract Tabular Formatted Parser Application for UoT 
 <img src="./public/textract-pipeline.drawio.png" width="800"/>
 
 ## Setup
+### Set up AWS configuration
+This app depends on AWS Textract service. An AWS account is needed. The default location of `AWS_SHARED_CREDENTIALS_FILE` and `AWS_CONFIG_FILE` are at `'~/.aws/credentials'` and `'~/.aws/config'`. Use 
+```sh
+$ aws configure
+```
+to set up your credentials and default region. For more details about AWS configuration, check [Boto3 1.28.5 documentation](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/credentials.html).
+
 ### Install the required dependencies 
 
 This project mainly depends on [Tkinter](https://docs.python.org/3/library/tkinter.html#module-tkinter)

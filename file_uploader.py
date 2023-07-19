@@ -1,6 +1,7 @@
 from tkinter import Tk, Button, filedialog, Label
 import os
 import shutil
+from components.upload_to_s3 import *
 
 filepath = ""  # Variable to store the file path
 
@@ -12,9 +13,17 @@ def open_file_dialog():
     )
     filepath = filedialog.askopenfilename(filetypes=filetypes)
     if filepath:
+        filename = os.path.basename(filepath)
         # Perform actions with the selected file
         print("Selected File:", filepath)
-        file_label.config(text="Uploaded File: " + os.path.basename(filepath))
+        
+        input_file_path = filepath
+        bucket_name = 'poe-textract'
+        s3_output_key = 'sample/'+filename
+
+        upload_to_s3(input_file_path, bucket_name, s3_output_key)
+
+        file_label.config(text="Uploaded File: " + filename)
 
 def download_file():
     global filepath  # Access the global variable
