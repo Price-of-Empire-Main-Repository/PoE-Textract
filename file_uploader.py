@@ -2,11 +2,14 @@ from tkinter import Tk, Button, filedialog, Label
 import os
 import shutil
 from components.upload_to_s3 import *
+from components.textract import *
 
 filepath = ""  # Variable to store the file path
+bucket_name = 'poe-textract'
 
 def open_file_dialog():
     global filepath  # You need to access the global variable to save the path
+    global bucket_name
     filetypes = (
         ("PDF Files", "*.pdf"),
         ("Image Files", "*.jpg;*.jpeg;*.png;*.gif")
@@ -18,19 +21,28 @@ def open_file_dialog():
         print("Selected File:", filepath)
         
         input_file_path = filepath
-        bucket_name = 'poe-textract'
         s3_output_key = 'sample/'+filename
 
         upload_to_s3(input_file_path, bucket_name, s3_output_key)
 
         file_label.config(text="Uploaded File: " + filename)
 
+def start_textract():
+    global filepath
+    global bucket_name
+
+    filename = os.path.basename(filepath)
+    s3_output_key = 'sample/'+filename
+    call_textract(bucket_name, s3_output_key)
+
 def download_file():
     global filepath  # Access the global variable
-    if filepath:
+    result_filename = 'sample/'+os.path.splitext(os.path.basename(filepath))[0]+'.csv'
+    print(result_filename)
+    if result_filename:
         download_path = filedialog.asksaveasfilename(defaultextension='*.*')
         if download_path:
-            shutil.copy2(filepath, download_path)
+            shutil.copy2(result_filename, download_path)
 
 # Create the Tkinter window
 window = Tk()
@@ -48,6 +60,10 @@ upload_button.pack()
 # Create a label to display the file name
 file_label = Label(window, text="Uploaded File:")
 file_label.pack(pady=10)
+
+# Create the button to open the file dialog
+upload_button = Button(window, text="Start Textract", command=start_textract)
+upload_button.pack()
 
 # Create the button to download the uploaded file
 download_button = Button(window, text="Download File", command=download_file)
