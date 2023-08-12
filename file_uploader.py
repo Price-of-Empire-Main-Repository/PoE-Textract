@@ -1,4 +1,4 @@
-from tkinter import Tk, Button, filedialog, Label
+from tkinter import Tk, Button, filedialog, Label, OptionMenu, StringVar, IntVar, Checkbutton
 import os
 import shutil
 from components.upload_to_s3 import *
@@ -30,14 +30,39 @@ def open_file_dialog():
 def start_textract():
     global filepath
     global bucket_name
+    global language_var
+    global translate_var
 
     filename = os.path.basename(filepath)
     s3_output_key = 'sample/'+filename
-    call_textract(bucket_name, s3_output_key)
+
+    require_translate = False
+    selected_language_code = 'en'
+    selected_language = language_var.get()
+    
+    if selected_language == "Spanish" and translate_var.get() == 1:
+        selected_language_code = 'es'
+        require_translate = True
+    
+    call_textract(bucket_name, s3_output_key, selected_language_code, require_translate)  # Passing selected language
 
 def download_file():
     global filepath  # Access the global variable
-    result_filename = 'sample/'+os.path.splitext(os.path.basename(filepath))[0]+'.csv'
+    global language_var
+    global translate_var
+
+    require_translate = False
+    selected_language_code = 'en'
+    selected_language = language_var.get()
+    
+    if selected_language == "Spanish" and translate_var.get() == 1:
+        selected_language_code = 'es'
+        require_translate = True
+
+    if(require_translate):
+        result_filename = 'sample/'+os.path.splitext(os.path.basename(filepath))[0]+ f'_{selected_language_code}.csv'
+    else:
+        result_filename = 'sample/'+os.path.splitext(os.path.basename(filepath))[0]+'.csv'
     print(result_filename)
     if result_filename:
         download_path = filedialog.asksaveasfilename(defaultextension='*.*')
@@ -60,6 +85,18 @@ upload_button.pack()
 # Create a label to display the file name
 file_label = Label(window, text="Uploaded File:")
 file_label.pack(pady=10)
+
+# Create the checkbox for translation
+translate_var = IntVar()
+translate_checkbox = Checkbutton(window, text="Translate to:",
+                                variable=translate_var, onvalue=1, offvalue=0)
+translate_checkbox.pack()
+
+# Create a selection menu for choosing the language
+language_var = StringVar(window)
+language_var.set("English")  # Default language selection
+language_menu = OptionMenu(window, language_var, "English", "Spanish")
+language_menu.pack()
 
 # Create the button to open the file dialog
 upload_button = Button(window, text="Start Textract", command=start_textract)

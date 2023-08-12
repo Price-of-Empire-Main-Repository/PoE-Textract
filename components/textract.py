@@ -4,7 +4,6 @@ from IPython.display import IFrame
 import csv
 from trp import Document
 import os
-# import textractprettyprinter as tp
 
 
 def startJob(s3BucketName, objectName, textract):
@@ -59,7 +58,7 @@ def getJobResults(jobId, textract):
 
     return pages
 
-def call_textract(s3BucketName, documentName):
+def call_textract(s3BucketName, documentName, selected_language_code, require_translate):
     # Amazon S3 client
     s3 = boto3.client('s3')
 
@@ -90,3 +89,20 @@ def call_textract(s3BucketName, documentName):
                     writer.writerow(formatRow)
 
     print(f"Table data saved to {csv_filename}")
+
+    if require_translate:
+        # Translate the CSV file to the selected language using Amazon Translate
+        translate = boto3.client('translate')
+        response = translate.translate_text(
+            Text=open(csv_filename, 'r').read(),
+            SourceLanguageCode="auto",
+            TargetLanguageCode=selected_language_code
+        )
+
+        translated_csv_filename = os.path.splitext(documentName)[0] + f'_{selected_language_code}.csv'
+
+        with open(translated_csv_filename, 'w', newline='') as translated_csvfile:
+            translated_csvfile.write(response['TranslatedText'])
+
+        print(f"Translated CSV data saved to {translated_csv_filename}")
+
